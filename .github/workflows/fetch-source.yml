@@ -35,8 +35,7 @@ jobs:
               run: echo "Aseprite-${{ steps.latest.outputs.tag }} fetched by github-actions" >./version.txt
             
                 
-            - run: mkdir -p ./artifact
-            - run: 
+            - run: mkdir -p ./artifact 
             - uses: actions/upload-artifact@v4
               with:
                 name: version-file
