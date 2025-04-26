@@ -47,6 +47,7 @@ jobs:
           run: |
             curl -sL https://api.github.com/repos/aseprite/aseprite/releases/latest --header 'authorization:  Bearer ${{ secrets.GITHUB_TOKEN }}' | jq -r ".tag_name" > aseprite-versions/version.json
             rm -rf aseprite-versions/version-check.json
+            git config --global user.signingkey E92D67CFBE34EF25
             git add .
             git commit -S -m "new version released"
             git push

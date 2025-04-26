@@ -38,6 +38,7 @@ jobs:
       - name: Push File
         if: steps.check.outputs.diff != 'false'
         run: |
+          git config --global user.signingkey E92D67CFBE34EF25
           git add deb-framework/
           git commit -S -m "new version released"
           git push
