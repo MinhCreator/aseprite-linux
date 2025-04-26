@@ -34,7 +34,7 @@ jobs:
           git_committer_name: ${{ secrets.NAME }}
           git_committer_email: ${{ secrets.EMAIL }}
         env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PRIVATE_KEY: ${{ github.token }}
       - name: Push File
         if: steps.check.outputs.diff != 'false'
         run: |
