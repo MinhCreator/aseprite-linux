@@ -1,9 +1,7 @@
 name: fetch source
 
-on: 
-    push:
-        tags:
-            - "v*.*.*-beta*"
+on: push
+        
        
 
 jobs:
