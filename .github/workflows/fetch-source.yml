@@ -1,15 +1,16 @@
 name: fetch source
 
-on: push
+on: 
+    workflow_dispatch:
         
        
-
+permissions:                # Job-level permissions configuration starts here
+        contents: write           # 'write' access to repository contents
+        pull-requests: write
 jobs:
     fetch-source:
         runs-on: ubuntu-latest
-        permissions:                # Job-level permissions configuration starts here
-            contents: write           # 'write' access to repository contents
-            pull-requests: write
+        
         steps:
         
             
@@ -29,16 +30,16 @@ jobs:
                 ref: ${{ steps.latest.outputs.tag }}
                 fetch-depth: 0
 
-            - name: Generate Changelog
+            - name: Generate version file
               run: echo "Aseprite-${{ steps.latest.outputs.tag }} fetched by github-actions" > ${{ github.workspace }}-version.txt
             
-            - name: checkout
-              id: checkout
+            - name: commit
+              id:  commit
               uses: actions/checkout@v4
             - run: |
                 
-                git config user.name "github-actions[bot]"
-                git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                git config --global user.name "github-actions[bot]"
+                git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
                 git add ${{ github.workspace }}-version.txt
                 git commit -m "generated"
                 git push
