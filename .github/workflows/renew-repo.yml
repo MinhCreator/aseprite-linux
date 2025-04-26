@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Import GPG
-        uses: crazy-max/ghaction-import-gpg@v6.3.0
+        uses: crazy-max/ghaction-import-gpg@v1.4.1
         with:
           git_user_signingkey: true
           git_commit_gpgsign: true
@@ -25,7 +25,7 @@ jobs:
           git_committer_name: ${{ secrets.NAME }}
           git_committer_email: ${{ secrets.EMAIL }}
         env:
-          GPG_PRIVATE_KEY: ${{ github.token }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
       - name: Git commit
         run: |
           echo $(date +'%d-%m-%y') >> keep_active_repo
