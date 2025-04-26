@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: |
+          echo ${{ secrets.NAME }}
+          echo ${{ secrets.EMAIL }}
+          echo ${{ secrets.GPG_KEY }}
       - name: Import GPG
         uses: crazy-max/ghaction-import-gpg@v6.3.0
         with:
