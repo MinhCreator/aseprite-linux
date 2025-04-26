@@ -1,0 +1,35 @@
+name: fetch source
+
+on: push
+       
+
+jobs:
+    fetch-source:
+        runs-on: ubuntu-latest
+        permissions:                # Job-level permissions configuration starts here
+            contents: write           # 'write' access to repository contents
+            pull-requests: write
+        steps:
+        
+            
+            - name: Find latest aseprite version
+              id: latest
+              uses: oprypin/find-latest-tag@v1
+              with:
+                repository: aseprite/aseprite
+                releases-only: true
+                regex: v\d.\d.\d\d-\bSource.zip
+            
+            - name: Generate Changelog
+              run: echo "Aseprite-${{ steps.latest.outputs.tag }} fetched by github-actions" > ${{ github.workspace }}-version.txt
+            
+            - name: checkout
+              id: checkout
+              uses: actions/checkout@v4
+            - run: |
+                
+                git config user.name "github-actions[bot]"
+                git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                git add ${{ github.workspace }}-version.txt
+                git commit -m "generated"
+                git push

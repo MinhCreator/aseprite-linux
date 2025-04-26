@@ -1,0 +1,144 @@
+name: build-aseprite-linux
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Enter Aseprite version to build, leave empty for latest
+        required: false
+
+env:
+      VERSION: ${{inputs.version}}
+jobs: 
+  setup-environment:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      TAG: ${{ steps.tag.outputs.TAG }}
+    steps:    
+      
+      - name: Find latest aseprite version
+        id: latest
+        uses: oprypin/find-latest-tag@v1
+        with:
+            repository: aseprite/aseprite
+            releases-only: true
+            regex: v\d.\d.\d\d-\bSource.zip
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+            repository: aseprite/aseprite
+            ref: ${{ steps.latest.outputs.tag }}
+            fetch-depth: 0
+      
+      - name: export tag
+        id: tag
+        run: |
+          echo "TAG=${{steps.latest.outputs.tag}}" >> "$GITHUB_OUTPUT"
+
+      
+  building-process:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: [setup-environment]
+    env:
+      tag: ${{ needs.setup-environment.outputs.TAG }}
+    outputs:
+      VER: ${{ steps.vs.outputs.VERSION }}
+    steps:
+      - name: check version 
+        id: vs
+        run: |
+            if [${{ env.VERSION == null  }}]; then
+              # echo "Aseprite Version: ${{ env.tag }}"
+              echo "VERSION=${{ env.tag }}" >> "$GITHUB_OUTPUT"
+            else 
+              echo "Aseprite Version: ${{ env.VERSION }}"
+              echo "VERSION=${{ env.VERSION }}" >> "$GITHUB_OUTPUT"
+            fi      
+      
+      - name: Repo clone latest version or specified version
+        id: clone
+        run: |
+              git clone --branch ${{ steps.vs.outputs.VERSION }} --single-branch https://github.com/aseprite/aseprite.git
+
+      - name: install dependencies
+        id: depend
+        run: |
+          sudo apt install -y g++ clang libc++-dev libc++abi-dev ninja-build libx11-dev libxcursor-dev libxi-dev libgl1-mesa-dev libfontconfig1-dev libstdc++-12-dev gcc
+          
+          sudo apt update && sudo apt upgrade
+      
+      - name: Setup cmake
+        id: cmake
+        uses: jwlawson/actions-setup-cmake@v2
+
+      - name: update submodules
+        id: submodules
+        run: |
+            cd aseprite
+            git pull
+            git submodule update --init --recursive
+        
+      - name: build
+        id: built
+        run: |
+            cd aseprite
+            mkdir build
+            cd build
+            export CC=clang
+            export CXX=clang++
+            cmake \
+              -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+              -DCMAKE_CXX_FLAGS:STRING=-stdlib=libc++ \
+              -DCMAKE_EXE_LINKER_FLAGS:STRING=-stdlib=libc++ \
+              -DLAF_BACKEND=skia \
+              -DSKIA_DIR=$HOME/deps/skia \
+              -DSKIA_LIBRARY_DIR=$HOME/deps/skia/out/Release-x64 \
+              -DSKIA_LIBRARY=$HOME/deps/skia/out/Release-x64/libskia.a \
+              -DCMAKE_POLICY_VERSION_MINIMUM=3.10 \
+              -G Ninja \
+              ..
+      
+      - name: Create Archive
+        id: archive
+        run: |
+             
+              tar -czf "Aseprite-linux-ubuntu-debian-${{ steps.vs.outputs.VERSION }}".tar.gz * 
+
+  
+  check-and-publish:         
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   
+    needs: [building-process]
+    env:
+      VISIONS: ${{ needs.building-process.outputs.VER }}
+    steps:
+            
+      - name: Generate checksum
+        id: checksum
+        uses: jmgilman/actions-generate-checksum@v1
+        with:
+          patterns: |
+            *.zip
+            *.tar.gz
+      
+      - name: Generate Changelog
+        run: echo "Aseprite-linux-${{ env.VISIONS }} latest built by github-actions" > ${{ github.workspace }}-release.txt
+
+      - name: GitHub Released
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: ${{ github.workspace }}-release.txt
+          repository: MinhCreator/aseprite-linux64
+          name: Aseprite-linux-${{ env.VISIONS }}
+          tag_name: ${{ env.VISIONS }}
+          files: |
+            checksum.txt
+            Aseprite-linux-ubuntu-debian-${{ env.VISIONS }}.tar.gz
