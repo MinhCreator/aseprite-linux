@@ -33,7 +33,7 @@ jobs:
           git_tag_gpgsign: true
           git_committer_name: ${{ secrets.NAME }}
           git_committer_email: ${{ secrets.EMAIL }}
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg_private_key: '${{ secrets.GPG_PRIVATE_KEY }}'
         
       - name: Push File
         if: steps.check.outputs.diff != 'false'
