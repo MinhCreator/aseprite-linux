@@ -2,7 +2,14 @@ name: RENEW
 on:
   schedule:
     - cron: '0 0 1,15 * *'
+  workflow_dispatch:
+    inputs:
+      name:
+          description: 'Run?'
+          required: true
+          default: 'YES!'
 
+          
 jobs:
   build:
     runs-on: ubuntu-latest
