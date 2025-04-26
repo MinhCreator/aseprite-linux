@@ -1,0 +1,29 @@
+name: RENEW
+on:
+  schedule:
+    - cron: '0 0 1,15 * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Import GPG
+        uses: crazy-max/ghaction-import-gpg@v6.3.0
+        with:
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          git_tag_gpgsign: true
+          git_committer_name: ${{ secrets.NAME }}
+          git_committer_email: ${{ secrets.EMAIL }}
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      - name: Git commit
+        run: |
+          echo $(date +'%d-%m-%y') >> keep_active_repo
+          git config --global commit.gpgsign true
+          git config --global user.email "${{ secrets.EMAIL }}"
+          git config --global user.name "${{ secrets.NAME }}"
+          git add .
+          git commit -S -m "Keep active"
+          git push
