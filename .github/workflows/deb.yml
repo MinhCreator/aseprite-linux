@@ -33,7 +33,7 @@ jobs:
           git_tag_gpgsign: true
           git_committer_name: ${{ secrets.NAME }}
           git_committer_email: ${{ secrets.EMAIL }}
-          gpg_private_key: '${{ secrets.WORK1 }}'
+          gpg_private_key: ${{ secrets.WORK1 }}
         
       - name: Push File
         if: steps.check.outputs.diff != 'false'
@@ -45,5 +45,5 @@ jobs:
         if: steps.check.outputs.diff != 'false'
         uses: peter-evans/repository-dispatch@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT }}
           event-type: build

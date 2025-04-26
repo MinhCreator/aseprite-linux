@@ -24,7 +24,7 @@ jobs:
           git_tag_gpgsign: true
           git_committer_name: ${{ secrets.NAME }}
           git_committer_email: ${{ secrets.EMAIL }}
-          gpg_private_key: '${{ secrets.WORK1 }}'
+          gpg_private_key: ${{ secrets.WORK1 }}
         
       - name: Git commit
         run: |
