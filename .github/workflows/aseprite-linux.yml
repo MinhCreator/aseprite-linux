@@ -32,7 +32,7 @@ jobs:
       - name: Get Download Links
         run: |
           echo "action_ase=$(curl -sL https://api.github.com/repos/aseprite/aseprite/releases/latest | jq -r '.assets[].browser_download_url')" >> "$GITHUB_OUTPUT"
-          echo "action_skia=$(curl -sL https://api.github.com/repos/aseprite/skia/releases/latest | jq -r '.assets[].browser_download_url' | grep Linux | grep 64)" >> "$GITHUB_OUTPUT"
+          echo "action_skia=$(curl -sL https://api.github.com/repos/aseprite/skia/releases/latest | jq -r '.assets[].browser_download_url' | grep Linux | grep x64)" >> "$GITHUB_OUTPUT"
           echo "action_tag=$(curl -s https://api.github.com/repos/aseprite/aseprite/releases/latest | jq -r '.tag_name')" >> "$GITHUB_OUTPUT"
         id: links
 
