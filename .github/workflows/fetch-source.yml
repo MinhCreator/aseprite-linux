@@ -18,7 +18,7 @@ jobs:
               with:
                 repository: aseprite/aseprite
                 releases-only: true
-                regex: v\d.\d.\d\d-\bSource.zip
+                regex: v\d.\d.\d\d-\bSource
             
             - name: Generate Changelog
               run: echo "Aseprite-${{ steps.latest.outputs.tag }} fetched by github-actions" > ${{ github.workspace }}-version.txt
