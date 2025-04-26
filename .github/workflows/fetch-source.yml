@@ -41,7 +41,7 @@ jobs:
             git_committer_email: ${{ secrets.EMAIL }}
             gpg_private_key: ${{ secrets.WORK1 }}
           env:
-            GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+            GPG_PRIVATE_KEY: ${{ secrets.WORK1 }}
         
         - name: Git commit
           if: steps.git-check.outputs.modified != 'false'
