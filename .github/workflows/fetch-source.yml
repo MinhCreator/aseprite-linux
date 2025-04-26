@@ -32,13 +32,12 @@ jobs:
                 fetch-depth: 0
 
             - name: Generate version file
-              run: echo "Aseprite-${{ steps.latest.outputs.tag }} fetched by github-actions" > ${{ github.workspace }}-version.txt
+              run: echo "Aseprite-${{ steps.latest.outputs.tag }} fetched by github-actions" >./version.txt
             
-            - name: commit
-              id:  commit
-              uses: actions/checkout@v4
-            - run: |
                 
-                git add ${{ github.workspace }}-version.txt
-                git commit -m "generated"
-                git push
+            - run: mkdir -p ./artifact
+            - run: 
+            - uses: actions/upload-artifact@v4
+              with:
+                name: version-file
+                path: ./version.txt
