@@ -32,15 +32,15 @@ jobs:
         
         - name: Import GPG
           if: steps.git-check.outputs.modified != 'false'
-          uses: crazy-max/ghaction-import-gpg@v1.4.1
+          uses: crazy-max/ghaction-import-gpg@v6
           with:
             git_user_signingkey: true
             git_commit_gpgsign: true
             git_tag_gpgsign: true
             git_committer_name: ${{ secrets.NAME }}
             git_committer_email: ${{ secrets.EMAIL }}
-          env:
-            GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+            gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+            
         
         - name: Git commit
           if: steps.git-check.outputs.modified != 'false'
