@@ -1,6 +1,7 @@
 name: fetch source
 
 on: 
+    push:
     workflow_dispatch:
         
        
