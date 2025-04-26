@@ -17,17 +17,19 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Import GPG
+        id: import-gpg
         uses: crazy-max/ghaction-import-gpg@v6
         with:
           git_user_signingkey: true
-          git_commit_gpgsign: true
-          git_tag_gpgsign: true
+          git_commit_gpgsign: true         
           git_committer_name: ${{ secrets.NAME }}
           git_committer_email: ${{ secrets.EMAIL }}
           gpg_private_key: ${{ secrets.WORK1 }}
-        
+          passphrase: ${{ secrets.PASSPHRASE }}
       - name: Git commit
         run: |
+          git config --global user.email "${{ steps.import-gpg.outputs.email }}"
+          git config --global user.name "${{ steps.import-gpg.outputs.name }}"
           echo $(date +'%d-%m-%y') >> keep_active_repo
           git add .
           git commit -S -m "Keep active"
