@@ -20,6 +20,14 @@ jobs:
                 releases-only: true
                 regex: v\d.\d.\d\d-\bSource
             
+            - name: Checkout
+              id: check
+              uses: actions/checkout@v4
+              with:
+                repository: aseprite/aseprite
+                ref: ${{ steps.latest.outputs.tag }}
+                fetch-depth: 0
+
             - name: Generate Changelog
               run: echo "Aseprite-${{ steps.latest.outputs.tag }} fetched by github-actions" > ${{ github.workspace }}-version.txt
             

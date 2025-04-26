@@ -24,6 +24,7 @@ jobs:
             repository: aseprite/aseprite
             releases-only: true
             regex: v\d.\d.\d\d-\bSource.zip
+      
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
