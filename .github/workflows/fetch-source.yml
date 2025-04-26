@@ -1,6 +1,9 @@
 name: fetch source
 
-on: push
+on: 
+    push:
+        tags:
+            - "v*.*.*-beta*"
        
 
 jobs:
@@ -18,7 +21,7 @@ jobs:
               with:
                 repository: aseprite/aseprite
                 releases-only: true
-                regex: v\d.\d.\d\d-\bSource
+                regex: /v\d.\d.\d\d
             
             - name: Checkout
               id: check

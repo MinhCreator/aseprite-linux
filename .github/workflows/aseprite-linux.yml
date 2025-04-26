@@ -23,7 +23,7 @@ jobs:
         with:
             repository: aseprite/aseprite
             releases-only: true
-            regex: v\d.\d.\d\d-\bSource.zip
+            regex: /v\d.\d.\d\d
       
       - name: Checkout
         id: checkout
