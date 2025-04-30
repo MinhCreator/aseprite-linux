@@ -180,7 +180,7 @@ jobs:
       - name: Windows Build
         id: build
         shell: cmd
-        run: call ./win-built-script/build.cmd
+        run: call win-build.cmd
         env:
           ASEPRITE_VERSION: ${{ github.event.inputs.version }}
       
