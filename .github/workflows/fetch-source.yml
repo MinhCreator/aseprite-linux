@@ -30,26 +30,13 @@ jobs:
           id: git-check
           run: echo "modified=$(if diff aseprite-versions/version.json aseprite-versions/version-check.json -q;     then echo "false"; fi)"  >> "$GITHUB_OUTPUT"
         
-        - name: Import GPG
-          id: import-gpg
-          if: steps.git-check.outputs.modified != 'false'
-          uses: crazy-max/ghaction-import-gpg@v6
-          with:
-            git_committer_name: ${{ secrets.NAME }}
-            git_committer_email: ${{ secrets.EMAIL }}
-            gpg_private_key: ${{ secrets.WORK1 }}
-            passphrase: ${{ secrets.PASSPHRASE }}
-            git_user_signingkey: true
-            git_commit_gpgsign: true
-        
         - name: Git commit
           if: steps.git-check.outputs.modified != 'false'
-
           run: |
             curl -sL https://api.github.com/repos/aseprite/aseprite/releases/latest --header 'authorization:  Bearer ${{ secrets.GITHUB_TOKEN }}' | jq -r ".tag_name" > aseprite-versions/version.json
             rm -rf aseprite-versions/version-check.json
-            git config --global user.email "${{ steps.import-gpg.outputs.email }}"
-            git config --global user.name "${{ steps.import-gpg.outputs.name }}"
+            git config --global user.email "${{ secrets.EMAIL }}"
+            git config --global user.name "${{ secrets.NAME }}"
             git add .
             git commit -S -m "new version released"
             git push

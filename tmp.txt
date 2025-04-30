@@ -1,0 +1,11 @@
+# - name: Import GPG
+        #   id: import-gpg
+        #   if: steps.git-check.outputs.modified != 'false'
+        #   uses: crazy-max/ghaction-import-gpg@v6
+        #   with:
+        #     git_committer_name: ${{ secrets.NAME }}
+        #     git_committer_email: ${{ secrets.EMAIL }}
+        #     gpg_private_key: ${{ secrets.WORK1 }}
+        #     passphrase: ${{ secrets.PASSPHRASE }}
+        #     git_user_signingkey: true
+        #     git_commit_gpgsign: true

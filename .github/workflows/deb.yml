@@ -2,6 +2,11 @@ name: Update package version
 on:
   repository_dispatch:
      types: [new-release]
+
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,21 +29,12 @@ jobs:
         run: |
           cd deb-framework/DEBIAN
           sed -i 's/${{ steps.var.outputs.original }}/${{ steps.var.outputs.source }}/g' control
-      - name: Import GPG
-        if: steps.check.outputs.diff != 'false'
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          git_user_signingkey: true
-          git_commit_gpgsign: true
-          git_committer_name: ${{ secrets.NAME }}
-          git_committer_email: ${{ secrets.EMAIL }}
-          gpg_private_key: ${{ secrets.WORK1 }}
-          passphrase: ${{ secrets.PASSPHRASE }}
+      
       - name: Push File
         if: steps.check.outputs.diff != 'false'
         run: |
-          git config --global user.email "${{ steps.import-gpg.outputs.email }}"
-          git config --global user.name "${{ steps.import-gpg.outputs.name }}"
+          git config --global user.email "${{ secrets.EMAIL }}"
+          git config --global user.name "${{ secrets.NAME }}"
           git add deb-framework/
           git commit -S -m "new version released"
           git push
