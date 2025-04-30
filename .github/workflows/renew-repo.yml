@@ -27,7 +27,7 @@ jobs:
           git config --global user.name "MinhCreator"
           echo $(date +'%d-%m-%y') >> keep_active_repo
           git add .
-          git commit -S -m "Keep active repo"
+          git commit -m "Keep active repo"
           git push origin
       
       - name: Push File
