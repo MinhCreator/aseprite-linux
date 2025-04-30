@@ -159,7 +159,7 @@ jobs:
         id: archive
         run: |
               cd aseprite/build
-              tar -czf Aseprite-${{ steps.vs.outputs.VERSION }}.tar.gz *
+              tar -czf Aseprite-linux-${{ steps.vs.outputs.VERSION }}.tar.gz *
              
       
       - name: Upload linux artifact
@@ -207,12 +207,12 @@ jobs:
       #     patterns: |
       #       *.zip
       #       *.tar.gz
-      - uses: actions/checkout@v3
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-      - name: Get tag
-        run: echo "atb=$(cat release-versions/version.json)" >> "$GITHUB_OUTPUT"
-        id: links
+      # - uses: actions/checkout@v3
+      # - name: Download artifacts
+      #   uses: actions/download-artifact@v3
+      # - name: Get tag
+      #   run: echo "atb=$(cat release-versions/version.json)" >> "$GITHUB_OUTPUT"
+      #   id: links
 
 
       - name: Generate Changelog
@@ -229,5 +229,5 @@ jobs:
           name: Aseprite-${{ env.VISIONS }}
           tag_name: ${{ env.VISIONS }}
           files: |
-            artifact/Aseprite-${{ env.VERSION }}.tar.gz
+            artifact/Aseprite-linux-${{ env.VERSION }}.tar.gz
             artifact/Aseprite-win-x64-${{ env.VERSION }}.zip
