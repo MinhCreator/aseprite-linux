@@ -28,7 +28,7 @@ jobs:
         - uses: actions/checkout@v4
         - name: Fetch release version
           run: |
-            curl -s https://api.github.com/repos/MinhCreator/aseprite-linux/releases/latest --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | jq -r ".tag_name"  > release-versions/version.txt
+            curl -s https://api.github.com/repos/MinhCreator/aseprite-linux/releases/latest --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | jq -r ".tag_name"  > aseprite-versions/version.txt
             curl -s https://api.github.com/repos/aseprite/aseprite/releases/latest --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | jq -r ".tag_name" > aseprite-versions/version-check.txt    
             
         - name: Check for new version
