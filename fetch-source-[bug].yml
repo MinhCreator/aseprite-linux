@@ -56,4 +56,4 @@ jobs:
           uses: peter-evans/repository-dispatch@v3
           with:
             token: ${{ secrets.PAT }}
-            event-type: new-release
+            event-type: build

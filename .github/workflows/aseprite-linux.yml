@@ -37,7 +37,7 @@ jobs:
       
       - name: Get Download Links
         run: |
-          echo "action_ase=$(curl -sL https://api.github.com/repos/aseprite/aseprite/releases | jq -r '.assets[].browser_download_url' | grep Source)" >> "$GITHUB_OUTPUT"
+          echo "action_ase=$(curl -sL https://api.github.com/repos/aseprite/aseprite/releases/latest | jq -r '.assets[].browser_download_url' | grep Source)" >> "$GITHUB_OUTPUT"
           echo "action_skia=$(curl -sL https://api.github.com/repos/aseprite/skia/releases/latest | jq -r '.assets[].browser_download_url' | grep Linux-Release-x64)" >> "$GITHUB_OUTPUT"
           echo "action_tag=$(curl -s https://api.github.com/repos/aseprite/aseprite/releases/latest | jq -r '.tag_name')" >> "$GITHUB_OUTPUT"
         id: links
@@ -95,6 +95,8 @@ jobs:
             fi      
       
       - name: Clone aseprite source
+        if: ${{ steps.vs.outputs.switch == 'false' }}
+        id: clone-source
         run: |
           wget -q -O aseprite.zip ${{ env.ase }}
           7z x aseprite.zip -oaseprite | grep ing      
@@ -107,7 +109,11 @@ jobs:
               cd aseprite
               git pull
               git submodule update --init --recursive
-            else
+            elif [${{ steps.vs.outputs.switch == 'false'  }}]; then
+              git clone https://github.com/aseprite/aseprite.git aseprite
+              cd aseprite
+              git pull
+              git submodule update --init --recursive
               echo "skipped specified version clone process and default latest version cloned"
             fi
       
@@ -195,7 +201,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write   
-    needs: [building-process]
+    needs: [building-process, windows-build]
     env:
       VISIONS: ${{ needs.building-process.outputs.VER }}
     steps:
