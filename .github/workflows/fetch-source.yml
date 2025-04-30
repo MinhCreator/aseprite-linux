@@ -24,7 +24,7 @@ jobs:
           with: 
             persist-credentials: false
             fetch-depth: 0
-        
+            token: ${{ secrets.PAT }}
         - name: Find latest aseprite version
           id: latest
           uses: oprypin/find-latest-tag@v1
@@ -47,7 +47,7 @@ jobs:
         - name: Push File
           uses: ad-m/github-push-action@master
           with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
+            github_token: ${{ secrets.PAT }}
             branch: ${{ github.ref }}
         
         - name: Repository Dispatch

@@ -20,7 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+        with:
+          token: ${{ secrets.PAT }}
       - name: Git commit
         run: |
           git config --global user.email "92376650+MinhCreator@users.noreply.github.com"
@@ -33,5 +34,5 @@ jobs:
       - name: Push File
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PAT }}
           branch: ${{ github.ref }}
