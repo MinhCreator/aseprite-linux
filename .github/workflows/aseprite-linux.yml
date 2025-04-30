@@ -27,8 +27,14 @@ jobs:
       ACTION_SKIA : ${{steps.links.outputs.action_skia}}
       # ACTION_TAG : ${{steps.links.outputs.action_tag}}
     steps:    
+      
       - uses: actions/checkout@v4  
-
+      
+      - name: make lightweight runner
+        uses: rokibhasansagar/slimhub_actions@main
+      - run: | 
+          echo "cleanup done "
+      
       - name: Get Download Links
         run: |
           echo "action_ase=$(curl -sL https://api.github.com/repos/aseprite/aseprite/releases/latest | jq -r '.assets[].browser_download_url')" >> "$GITHUB_OUTPUT"
@@ -63,7 +69,6 @@ jobs:
         run: |
           echo "TAG=${{steps.latest.outputs.tag}}" >> "$GITHUB_OUTPUT"
 
-      
   building-process:
     runs-on: ubuntu-latest
     permissions:
@@ -166,13 +171,32 @@ jobs:
       - name: Upload linux artifact
         uses: actions/upload-artifact@v4
         with:
-          path: Aseprite-${{ steps.vs.outputs.VERSION }}-ubuntu_amd64.deb
+          path: |
+            Aseprite-${{ steps.vs.outputs.VERSION }}-ubuntu_amd64.deb
+            Aseprite-${{ steps.vs.outputs.VERSION }}.tar.gz
       
-      - name: Upload artifact
+
+  windows-build:
+    runs-on: windows-2022
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Windows Build
+        id: build
+        shell: cmd
+        run: call ./win-built-script/build.cmd
+        env:
+          ASEPRITE_VERSION: ${{ github.event.inputs.version }}
+      
+      - name: Archive
         uses: actions/upload-artifact@v4
         with:
-          path: Aseprite-${{ steps.vs.outputs.VERSION }}.tar.gz    
-  
+          name: Aseprite-win-x64-${{ steps.build.outputs.ASEPRITE_VERSION }}
+          path: prebuilt
+          if-no-files-found: error
+
   check-and-publish:         
     runs-on: ubuntu-latest
     permissions:
@@ -213,3 +237,4 @@ jobs:
           files: |
             artifact/Aseprite-ubuntu_amd64.deb
             artifact/Aseprite-${{ env.VERSION }}.tar.gz
+            artifact/Aseprite-win-x64-${{ env.VERSION }}.zip

@@ -2,6 +2,12 @@ name: Update package version
 on:
   repository_dispatch:
      types: [new-release]
+  workflow_dispatch:
+    inputs:
+      name:
+          description: 'Run?'
+          required: true
+          default: 'YES!'
 
 permissions:
   contents: write
@@ -14,6 +20,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT }}
+          persist-credentials: false
+          fetch-depth: 0
 
       - uses: actions/checkout@v4
       - name: Get versions
@@ -33,31 +41,22 @@ jobs:
         run: |
           cd deb-framework/DEBIAN
           sed -i 's/${{ steps.var.outputs.original }}/${{ steps.var.outputs.source }}/g' control
-      
-      - name: "Import GPG key"
-        id: import-gpg
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.PASSPHRASE }}
-          git_user_signingkey: true
-          git_commit_gpgsign: true
 
-      - name: "Commit and push changes"
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_author: "${{ steps.import-gpg.outputs.name }} <${{ steps.import-gpg.outputs.email }}>"
-          commit_user_name: ${{ steps.import-gpg.outputs.name }}
-          commit_user_email: ${{ steps.import-gpg.outputs.email }}
-
-      - name: Push File
+      - name: Push file
         if: steps.check.outputs.diff != 'false'
         run: |
-          git config --global user.email "${{ secrets.EMAIL }}"
-          git config --global user.name "${{ secrets.NAME }}"
+          git config --local user.email "${{ secrets.EMAIL }}"
+          git config --local user.name "${{ secrets.NAME }}"
           git add deb-framework/
-          git commit -S -m "new version released"
+          git commit --no-gpg-sign -m "new version released"
           git push
+      
+      - name: Push File
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}    
+
       - name: Repository Dispatch
         if: steps.check.outputs.diff != 'false'
         uses: peter-evans/repository-dispatch@v3

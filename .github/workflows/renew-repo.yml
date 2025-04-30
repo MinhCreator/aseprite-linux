@@ -8,20 +8,14 @@ on:
           description: 'Run?'
           required: true
           default: 'YES!'
+permissions:
+  contents: write
+  pull-requests: write
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: "Import GPG key"
-        id: import-gpg
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.GPG_KEY }}
-          passphrase: ${{ secrets.PASSPHRASE }}
-          git_user_signingkey: true
-          git_commit_gpgsign: true
       
       - name: Git commit
         run: |
@@ -29,5 +23,11 @@ jobs:
           git config --global user.name "${{ secrets.NAME }}"
           echo $(date +'%d-%m-%y') >> keep_active_repo
           git add .
-          git commit -S -m "Keep active repo"
+          git commit --no-gpg-sign -m "Keep active repo"
           git push
+      
+      - name: Push File
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

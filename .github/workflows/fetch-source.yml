@@ -10,7 +10,6 @@ on:
             required: true
             default: 'YES!'
         
-       
 permissions:                # Job-level permissions configuration starts here
         contents: write           # 'write' access to repository contents
         pull-requests: write
@@ -20,7 +19,9 @@ jobs:
        steps:
       
         - uses: actions/checkout@v4
-        
+          with: 
+            persist-credentials: false
+            fetch-depth: 0
         - name: Fetch release version
           run: |
             curl -s https://api.github.com/repos/MinhCreator/aseprite-linux/releases/latest --header     'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | jq -r ".tag_name"  > aseprite-versions/version.json
@@ -35,11 +36,17 @@ jobs:
           run: |
             curl -sL https://api.github.com/repos/aseprite/aseprite/releases/latest --header 'authorization:  Bearer ${{ secrets.GITHUB_TOKEN }}' | jq -r ".tag_name" > aseprite-versions/version.json
             rm -rf aseprite-versions/version-check.json
-            git config --global user.email "${{ secrets.EMAIL }}"
-            git config --global user.name "${{ secrets.NAME }}"
+            git config --local user.email "${{ secrets.EMAIL }}"
+            git config --local user.name "${{ secrets.NAME }}"
             git add .
-            git commit -S -m "new version released"
+            git commit --no-gpg-sign -m "new version released"
             git push
+        
+        - name: Push File
+          uses: ad-m/github-push-action@master
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            branch: ${{ github.ref }}
         
         - name: Repository Dispatch
           if: steps.git-check.outputs.modified != 'false'
