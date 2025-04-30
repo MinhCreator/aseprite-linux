@@ -10,6 +10,7 @@ on:
           default: 'YES!'
   pull_request:
   pull_request_target:
+  push:
 permissions:
   contents: write
   pull-requests: write

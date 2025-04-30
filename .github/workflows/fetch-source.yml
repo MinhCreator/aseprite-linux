@@ -11,7 +11,7 @@ on:
             default: 'YES!'
     pull_request:
     pull_request_target:    
-
+    push:
 permissions:                # Job-level permissions configuration starts here
         contents: write           # 'write' access to repository contents
         pull-requests: write
