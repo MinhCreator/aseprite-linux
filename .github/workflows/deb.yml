@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT }}
+
+      - uses: actions/checkout@v4
       - name: Get versions
         run: |
           cat deb-framework/DEBIAN/control | grep Version | cut -d " " -f 2 > original.txt
@@ -30,6 +34,22 @@ jobs:
           cd deb-framework/DEBIAN
           sed -i 's/${{ steps.var.outputs.original }}/${{ steps.var.outputs.source }}/g' control
       
+      - name: "Import GPG key"
+        id: import-gpg
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+
+      - name: "Commit and push changes"
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_author: "${{ steps.import-gpg.outputs.name }} <${{ steps.import-gpg.outputs.email }}>"
+          commit_user_name: ${{ steps.import-gpg.outputs.name }}
+          commit_user_email: ${{ steps.import-gpg.outputs.email }}
+
       - name: Push File
         if: steps.check.outputs.diff != 'false'
         run: |
