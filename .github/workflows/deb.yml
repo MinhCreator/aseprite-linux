@@ -45,8 +45,8 @@ jobs:
       - name: Push file
         if: steps.check.outputs.diff != 'false'
         run: |
-          git config --local user.email "${{ secrets.EMAIL }}"
-          git config --local user.name "${{ secrets.NAME }}"
+          git config --global user.email "${{ secrets.EMAIL }}"
+          git config --global user.name "${{ secrets.NAME }}"
           git add deb-framework/
           git commit --no-gpg-sign -m "new version released"
           git push
