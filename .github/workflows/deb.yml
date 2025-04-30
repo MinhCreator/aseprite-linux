@@ -51,7 +51,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add deb-framework/
           git commit --no-gpg-sign -m "new version released"
-          git push
+          git push origin
       
       - name: Push File
         uses: ad-m/github-push-action@master
