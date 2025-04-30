@@ -38,7 +38,7 @@ jobs:
             rm -rf aseprite-versions/version.json
             git config --global user.email "${{ secrets.EMAIL }}"
             git config --global user.name "${{ secrets.NAME }}"
-            git add .
+            git add aseprite-versions/
             git commit --no-gpg-sign -m "new version released"
             git push
         
