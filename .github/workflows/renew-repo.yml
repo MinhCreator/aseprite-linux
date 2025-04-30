@@ -24,7 +24,7 @@ jobs:
           echo $(date +'%d-%m-%y') >> keep_active_repo
           git add .
           git commit --no-gpg-sign -m "Keep active repo"
-          git push
+          git push origin
       
       - name: Push File
         uses: ad-m/github-push-action@master
