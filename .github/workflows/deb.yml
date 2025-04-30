@@ -40,13 +40,13 @@ jobs:
         id: check
         run: echo "diff=$(if diff original.txt source.txt -q; then echo "false"; fi)" >> "$GITHUB_OUTPUT"
       - name: Patch it
-        
+        if: steps.check.outputs.diff != 'false'
         run: |
           cd deb-framework/DEBIAN
           sed -i 's/${{ steps.var.outputs.original }}/${{ steps.var.outputs.source }}/g' control
 
       - name: Push file
-        
+        if: steps.check.outputs.diff != 'false'
         run: |
           git config user.email "92376650+MinhCreator@users.noreply.github.com"
           git config user.name "MinhCreator"
