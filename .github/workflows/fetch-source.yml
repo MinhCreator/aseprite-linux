@@ -1,0 +1,59 @@
+name: fetch source
+
+on: 
+    schedule:
+    - cron:  '00 5 * * 1,3,5'
+    workflow_dispatch:
+       inputs:
+        name:
+            description: 'Run?'
+            required: true
+            default: 'YES!'
+    pull_request:
+    pull_request_target:    
+    push:
+permissions:                # Job-level permissions configuration starts here
+        contents: write           # 'write' access to repository contents
+        pull-requests: write
+jobs:
+    fetch-source:
+       runs-on: ubuntu-latest
+       steps:
+      
+        - uses: actions/checkout@v4
+          with: 
+           
+            token: ${{ secrets.PAT }}
+ 
+        - uses: actions/checkout@v4
+        - name: Fetch release version
+          run: |
+            curl -s https://api.github.com/repos/MinhCreator/aseprite-linux/releases/latest --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | jq -r ".tag_name"  > release-versions/version.txt
+            curl -s https://api.github.com/repos/aseprite/aseprite/releases/latest --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | jq -r ".tag_name" > aseprite-versions/version-check.txt    
+            
+        - name: Check for new version
+          id: git-check
+          run: echo "modified=$(if diff aseprite-versions/version.txt aseprite-versions/version-check.txt -q; then echo "false"; fi)"  >> "$GITHUB_OUTPUT"
+
+        - name: Git commit
+          if: steps.git-check.outputs.modified != 'false'
+          run: |
+            curl -sL https://api.github.com/repos/aseprite/aseprite/releases/latest --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' | jq -r ".tag_name" > aseprite-versions/version.txt
+            rm -rf aseprite-versions/version-check.txt
+            git config user.email "92376650+MinhCreator@users.noreply.github.com"
+            git config user.name "MinhCreator"
+            git add .
+            git commit -m "new version released"
+            git push 
+        
+        - name: Push File
+          uses: ad-m/github-push-action@master
+          with:
+            github_token: ${{ secrets.PAT }}
+            branch: ${{ github.ref }}
+        
+        - name: Repository Dispatch
+          uses: peter-evans/repository-dispatch@v3
+          with:
+            token: ${{ secrets.PAT }}
+            event-type: new-release
