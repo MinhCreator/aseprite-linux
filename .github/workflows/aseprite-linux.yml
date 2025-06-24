@@ -175,33 +175,33 @@ jobs:
             Aseprite-${{ steps.vs.outputs.VERSION }}.tar.gz
       
 
-  windows-build:
-    runs-on: windows-2022
-    needs: [setup-env]
-    steps:
+  # windows-build:
+  #   runs-on: windows-2022
+  #   needs: [setup-env]
+  #   steps:
 
-      - name: Checkout
-        uses: actions/checkout@v4
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
       
-      - name: Windows Build
-        id: build
-        shell: cmd
-        run: call win-build.cmd
-        env:
-          ASEPRITE_VERSION: ${{ github.event.inputs.version }}
+  #     - name: Windows Build
+  #       id: build
+  #       shell: cmd
+  #       run: call win-build.cmd
+  #       env:
+  #         ASEPRITE_VERSION: ${{ github.event.inputs.version }}
       
-      - name: Archive
-        uses: actions/upload-artifact@v4
-        with:
-          name: Aseprite-win-x64-${{ steps.build.outputs.ASEPRITE_VERSION }}
-          path: prebuilt
-          if-no-files-found: error
+  #     - name: Archive
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: Aseprite-win-x64-${{ steps.build.outputs.ASEPRITE_VERSION }}
+  #         path: prebuilt
+  #         if-no-files-found: error
 
   check-and-publish:         
     runs-on: ubuntu-latest
     permissions:
       contents: write   
-    needs: [building-process, windows-build]
+    needs: [building-process]
     env:
       VISIONS: ${{ needs.building-process.outputs.VER }}
     steps:
